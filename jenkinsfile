@@ -4,13 +4,16 @@ def COLOR_MAP = [
     ]
 pipeline {
     agent any
-    environment {
+    tools {
+    maven 'maven'
+  }
+     environment {
         SCANNER_HOME = tool 'sonarqube'
     }
     stages {
         stage('git checkout') {
             steps {
-             git 'https://github.com/gow9629608170/Java-Springboot.git'
+            git 'https://github.com/gow9629608170/Java-Springboot.git'
             }
         }
          stage('compile') {
@@ -35,26 +38,33 @@ pipeline {
          stage('docker build') {
             steps {
              script {
+                 withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
                     sh 'docker build -t java-spring .'
+                  }
               }
             }
         }
          stage('docker push') {
             steps {
              script {
-                    sh 'docker tag java-spring gow9629608170/java-spring'
-                    sh 'docker push gow9629608170/java-spring'
+                withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
+                    sh 'docker tag java-spring gow9629608170/java-spring1'
+                    sh 'docker push gow9629608170/java-spring1'
+                  }
               }
             }
          }    
         stage('docker container') {
             steps {
              script {
-                    sh 'docker run -itd --name ci-cd-container -p 8085:8081 java-spring'
+                   withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
+                    sh 'docker run -itd --name javaspring-cont -p 8085:8085 java-spring'
                   }
               }
             }
-        }    	
+        }    
+    }	
+ 
     post {
         always {
             echo 'slack Notification.'
