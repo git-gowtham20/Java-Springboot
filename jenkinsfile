@@ -13,7 +13,7 @@ pipeline {
     stages {
         stage('git checkout') {
             steps {
-            git 'https://github.com/gow9629608170/Java-Springboot.git'
+            git 'https://github.com/git-gowtham20/Java-Springboot.git'
             }
         }
          stage('compile') {
@@ -49,7 +49,7 @@ pipeline {
              script {
                 withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
                     sh 'docker tag java-spring gow9629608170/java-spring1'
-                    sh 'docker push gow9629608170/java-spring1'
+                    sh 'docker push git-gowtham20/java-spring1'
                   }
               }
             }
